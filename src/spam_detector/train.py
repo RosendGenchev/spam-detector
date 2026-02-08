@@ -1,3 +1,5 @@
+"""Training pipeline for the spam detector model."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -9,7 +11,7 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 
-from src.spam_detector.data import Dataset, load_spam_dataset, train_test_split_dataset
+from spam_detector.data import Dataset, load_spam_dataset, train_test_split_dataset
 
 
 MODEL_PATH = Path("model/spam_model.joblib")
@@ -17,10 +19,7 @@ DATA_PATH = Path("data/spam.csv")
 
 
 def build_model() -> Pipeline:
-    """
-    Build ML pipeline:
-    TF-IDF vectorizer + Naive Bayes classifier
-    """
+    """Build and return a TF-IDF + Naive Bayes classification pipeline."""
     return Pipeline(
         steps=[
             ("tfidf", TfidfVectorizer(stop_words="english")),
@@ -30,6 +29,7 @@ def build_model() -> Pipeline:
 
 
 def train() -> Tuple[Pipeline, float]:
+    """Train the spam detection model and return the trained model and its accuracy."""
     dataset: Dataset = load_spam_dataset(DATA_PATH)
 
     x_train, x_test, y_train, y_test = train_test_split_dataset(dataset)
@@ -48,12 +48,14 @@ def train() -> Tuple[Pipeline, float]:
 
 
 def save_model(model: Pipeline, path: Path) -> None:
+    """Save the trained model to disk using joblib."""
     path.parent.mkdir(parents=True, exist_ok=True)
     joblib.dump(model, path)
     print(f"\n✅ Model saved to {path}")
 
 
 def main() -> None:
+    """Train the spam detector model and persist it to disk."""
     model, _ = train()
     save_model(model, MODEL_PATH)
 

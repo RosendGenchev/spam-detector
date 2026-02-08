@@ -1,18 +1,24 @@
+"""Dataset loading and validation utilities for the spam detector."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Tuple
 
+from sklearn.model_selection import train_test_split
+
+
 import pandas as pd
 
 
 class DataFormatError(ValueError):
-    """Raised when the dataset file is missing required columns or has invalid format."""
+    """Invalid dataset format or unreadable dataset file."""
 
 
 @dataclass(frozen=True)
 class Dataset:
+    """Container for dataset texts and labels."""
     texts: pd.Series
     labels: pd.Series
 
@@ -72,8 +78,7 @@ def load_spam_dataset(path: Path) -> Dataset:
 def train_test_split_dataset(
     dataset: Dataset, test_size: float = 0.2, random_state: int = 42
 ) -> Tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
-    """Simple wrapper to keep split logic in one place."""
-    from sklearn.model_selection import train_test_split
+    """Split dataset into train/test parts with stratification."""
 
     x_train, x_test, y_train, y_test = train_test_split(
         dataset.texts,

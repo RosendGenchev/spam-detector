@@ -1,13 +1,14 @@
+"""Command-line interface for the spam detector."""
 from __future__ import annotations
 
 from pathlib import Path
 
-from src.spam_detector.predict import ModelNotFoundError, load_model, predict_text
+from spam_detector.predict import ModelNotFoundError, load_model, predict_text
 
 MODEL_PATH = Path("model/spam_model.joblib")
 
-
 def main() -> None:
+    """Run an interactive CLI that predicts spam/ham for user-entered messages."""
     print("Spam Detector (type empty line to exit)\n")
 
     try:
