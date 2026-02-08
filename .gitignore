@@ -9,3 +9,5 @@ data/*.tar.gz
 .mypy_cache/
 .coverage
 htmlcov/
+*.egg-info/
+data/
