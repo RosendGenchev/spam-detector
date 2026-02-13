@@ -28,6 +28,10 @@ Train/test split with stratification
 
 Command-line interface (CLI) for live predictions
 
+Model evaluation with metrics + plots (confusion matrix, model comparison)
+
+FastAPI service for predictions (optional)
+
 
 
 Unit tests with coverage
@@ -80,6 +84,31 @@ The project provides a command-line interface that loads a trained spam classifi
 
 Users can enter text messages and receive a spam or ham classification along with a confidence score.
 
+
+Model selection (config)
+
+The file config.yaml selects which model to use:
+
+- nb (TF-IDF + Multinomial Naive Bayes)
+- logreg (TF-IDF + Logistic Regression)
+
+
+Evaluation + plots
+
+Generate evaluation metrics + plots into reports/:
+
+python -m spam_detector.evaluate
+
+
+API (FastAPI)
+
+Start the API locally:
+
+uvicorn spam_detector.api:app --reload
+
+Then POST JSON to /predict:
+
+{"text": "free prize, click now"}
 
 
 Notes

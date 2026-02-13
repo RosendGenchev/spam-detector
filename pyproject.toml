@@ -12,6 +12,11 @@ dependencies = [
   "pandas",
   "scikit-learn",
   "joblib",
+  "matplotlib",
+  "fastapi",
+  "uvicorn",
+  "pyyaml",
+  "types-PyYAML",
 ]
 
 [tool.setuptools]
@@ -26,7 +31,7 @@ pythonpath = ["src"]
 
 [tool.mypy]
 files = ["src/spam_detector"]
-python_version = "3.13"
+python_version = "3.11"
 ignore_missing_imports = true
 
 [tool.coverage.run]

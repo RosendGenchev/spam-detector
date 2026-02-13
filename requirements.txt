@@ -1,6 +1,11 @@
 pandas
 scikit-learn
 joblib
+matplotlib
+fastapi
+uvicorn
+pyyaml
+types-PyYAML
 pytest
 pytest-cov
 mypy

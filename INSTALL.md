@@ -6,7 +6,7 @@
 
 \- Python 3.10 or newer
 
-\- Tested on Windows with Python 3.13
+\- Tested on Windows with Python 3.11
 
 
 
@@ -57,6 +57,22 @@ python -m spam\_detector.cli
 
 
 Enter a message to classify it as spam or ham.
+
+
+\## Evaluate + generate plots
+
+python -m spam\_detector.evaluate
+
+This generates plots in reports/ (confusion matrix, model comparison).
+
+
+\## Run API (FastAPI)
+
+uvicorn spam\_detector.api:app --reload
+
+POST JSON to /predict, example body:
+
+{"text": "free prize, click now"}
 
 
 
