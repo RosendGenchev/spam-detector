@@ -41,8 +41,8 @@ def _ensure_reports_dir() -> None:
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def evaluate_one(model_name: ModelName, x_train, y_train, x_test, y_test):
-    model = build_pipeline(model_name)
+def evaluate_one(model_name: ModelName, x_train, y_train, x_test, y_test, *, tfidf):
+    model = build_pipeline(model_name, tfidf=tfidf)
     model.fit(x_train, y_train)
     preds = model.predict(x_test)
 
@@ -103,8 +103,8 @@ def main() -> None:
             "f1": dummy_f1,
             "preds": dummy_preds,
         },
-        evaluate_one("nb", x_train, y_train, x_test, y_test),
-        evaluate_one("logreg", x_train, y_train, x_test, y_test),
+        evaluate_one("nb", x_train, y_train, x_test, y_test, tfidf=cfg.tfidf),
+        evaluate_one("logreg", x_train, y_train, x_test, y_test, tfidf=cfg.tfidf),
     ]
 
     # Print detailed report for the configured model

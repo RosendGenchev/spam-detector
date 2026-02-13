@@ -1,66 +1,70 @@
-"""Training pipeline for the spam detector model."""
+"""Training pipeline for the spam detector model.
+
+Trains a selected model (Naive Bayes or Logistic Regression) using a TF-IDF pipeline
+and saves it to disk so it can be used by the CLI and the FastAPI service.
+"""
 
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Tuple
 
 import joblib
-from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 
-from spam_detector.data import Dataset, load_spam_dataset, train_test_split_dataset
+from spam_detector.config import load_config
+from spam_detector.data import load_spam_dataset, train_test_split_dataset
+from spam_detector.models import ModelName, TfidfConfig, build_pipeline
 
-
-MODEL_PATH = Path("model/spam_model.joblib")
+CONFIG_PATH = Path("config.yaml")
 DATA_PATH = Path("data/spam.csv")
+MODEL_DIR = Path("model")
 
 
-def build_model() -> Pipeline:
-    """Build and return a TF-IDF + Naive Bayes classification pipeline."""
-    return Pipeline(
-        steps=[
-            ("tfidf", TfidfVectorizer(stop_words="english")),
-            ("clf", MultinomialNB()),
-        ]
+def build_model(model: ModelName = "nb", tfidf: TfidfConfig | None = None) -> Pipeline:
+    """Build a model pipeline (used by tests too)."""
+    return build_pipeline(model, tfidf=tfidf)
+
+
+def train_and_evaluate() -> tuple[Pipeline, float]:
+    """Train the configured model and return (model, accuracy on the test split)."""
+    cfg = load_config(CONFIG_PATH)
+
+    dataset = load_spam_dataset(DATA_PATH)
+    x_train, x_test, y_train, y_test = train_test_split_dataset(
+        dataset, test_size=cfg.test_size, random_state=cfg.random_state
     )
 
-
-def train() -> Tuple[Pipeline, float]:
-    """Train the spam detection model and return the trained model and its accuracy."""
-    dataset: Dataset = load_spam_dataset(DATA_PATH)
-
-    x_train, x_test, y_train, y_test = train_test_split_dataset(dataset)
-
-    model: Pipeline = build_model()
+    model = build_pipeline(cfg.model, tfidf=cfg.tfidf)
     model.fit(x_train, y_train)
 
     preds = model.predict(x_test)
-    acc = accuracy_score(y_test, preds)
+    acc = float(accuracy_score(y_test, preds))
 
+    print(f"Configured model: {cfg.model}")
     print("Accuracy:", round(acc, 4))
-    print("\nConfusion matrix:\n", confusion_matrix(y_test, preds))
-    print("\nClassification report:\n", classification_report(y_test, preds))
+    print("Confusion matrix:", confusion_matrix(y_test, preds))
+    print("Classification report:\n", classification_report(y_test, preds))
 
     return model, acc
 
 
-def save_model(model: Pipeline, path: Path) -> None:
-    """Save the trained model to disk using joblib."""
+def save_model(model: Pipeline, path: Path) -> Path:
+    """Save the model to the given path and return it."""
     path.parent.mkdir(parents=True, exist_ok=True)
     joblib.dump(model, path)
-    print(f"✅ Model saved to {path}")
-
+    return path
 
 
 def main() -> None:
-    """Train the spam detector model and persist it to disk."""
-    model, _ = train()
-    model_path = Path("model") / "spam_model_nb.joblib"
-    save_model(model, model_path)
+    """Train the model and save it to model/spam_model_<model>.joblib."""
+    model, _ = train_and_evaluate()
+    cfg = load_config(CONFIG_PATH)
 
+    out_path = MODEL_DIR / f"spam_model_{cfg.model}.joblib"
+    save_model(model, out_path)
+
+    print(f"✅ Model saved to {out_path}")
 
 
 if __name__ == "__main__":

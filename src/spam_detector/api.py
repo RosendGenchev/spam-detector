@@ -48,7 +48,7 @@ def _load_or_train(model_name: str):
         dataset, test_size=cfg.test_size, random_state=cfg.random_state
     )
 
-    model = build_pipeline(cfg.model, tfidf=cfg.tfidf)
+    model = build_pipeline(model_name, tfidf=cfg.tfidf)
     model.fit(x_train, y_train)
 
     path.parent.mkdir(parents=True, exist_ok=True)
