@@ -1,0 +1,12 @@
+# Model selection for the API / CLI.
+# Options: nb | logreg
+model: nb
+
+# Train/eval settings
+random_state: 42
+test_size: 0.2
+
+# TF-IDF settings
+tfidf:
+  max_features: 5000
+  ngram_range: [1, 2]
