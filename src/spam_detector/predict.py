@@ -29,7 +29,7 @@ def load_model(path: Path) -> Pipeline:
     if not path.exists():
         raise ModelNotFoundError(
             f"Model file not found: {path}. "
-            "Train first with: python -m src.spam_detector.train"
+            "Train first with: python -m spam_detector.train"
         )
     model = joblib.load(path)
     if not hasattr(model, "predict") or not hasattr(model, "predict_proba"):

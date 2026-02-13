@@ -51,13 +51,16 @@ def save_model(model: Pipeline, path: Path) -> None:
     """Save the trained model to disk using joblib."""
     path.parent.mkdir(parents=True, exist_ok=True)
     joblib.dump(model, path)
-    print(f"\n✅ Model saved to {path}")
+    print(f"✅ Model saved to {path}")
+
 
 
 def main() -> None:
     """Train the spam detector model and persist it to disk."""
     model, _ = train()
-    save_model(model, MODEL_PATH)
+    model_path = Path("model") / "spam_model_nb.joblib"
+    save_model(model, model_path)
+
 
 
 if __name__ == "__main__":
